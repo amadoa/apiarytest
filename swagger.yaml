@@ -1,0 +1,1352 @@
+swagger: '2.0'
+info:
+  version: v1
+  title: Enterprise Service APIs
+host: api.enterpriseservice.escaladesports.com
+schemes:
+  - http
+  - https
+paths:
+  '/archeryorders/{id}/status':
+    get:
+      tags:
+        - ArcheryOrder
+      summary: Gets an Order status by Order Id.
+      operationId: ArcheryOrder_Status
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: Order Id.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: string
+  '/archeryorders/{id}':
+    delete:
+      tags:
+        - ArcheryOrder
+      summary: Deletes an order if it has not yet been imported into the AS400.
+      operationId: ArcheryOrder_Delete
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: Order Interface PO.
+          required: true
+          type: string
+      responses:
+        '204':
+          description: ''
+          schema:
+            type: object
+  /archeryorders:
+    post:
+      tags:
+        - ArcheryOrder
+      summary: Creates a new Order Interface. AS400 will convert this into a real order on batch
+      operationId: ArcheryOrder_Post
+      consumes:
+        - application/json
+        - text/json
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: order
+          in: body
+          description: The order interface.
+          required: true
+          schema:
+            $ref: '#/definitions/PostArcheryInterfaceOrder'
+      responses:
+        '201':
+          description: ''
+          schema:
+            type: string
+  '/ArcheryOrder/{id}':
+    get:
+      tags:
+        - ArcheryOrder
+      summary: Gets an Order and Details by Order Id.
+      operationId: ArcheryOrder_Get
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: Order Id.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/ArcheryOrderInterface'
+  /customer:
+    get:
+      tags:
+        - Customer
+      summary: 'Gets the specified customer, or a list of all customers if no customer number is provided.'
+      operationId: Customer_Get
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: customerNumber
+          in: query
+          description: The customer number.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Customer'
+  /customer/latest:
+    get:
+      tags:
+        - Customer
+      summary: Gets a list of customers that have been created on or after the given date
+      operationId: Customer_GetLatest
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: startDate
+          in: query
+          description: 'The date on or after a customer is created. Time is optional. Format: yyyy-mm-ddThh:mm:ss.nnnnnn+|-hh:mm .'
+          required: true
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CustomerBase'
+  /customer/updated:
+    get:
+      tags:
+        - Customer
+      summary: Gets a list of customers that have been updated on or after the given date
+      operationId: Customer_GetUpdate
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: startDate
+          in: query
+          description: 'The date on or after a customer is updated. Time is optional. Format: yyyy-mm-ddThh:mm:ss.nnnnnn+|-hh:mm .'
+          required: true
+          type: string
+          format: date-time
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CustomerBase'
+  /customer/salesreps:
+    get:
+      tags:
+        - Customer
+      summary: Gets the sales reps.
+      operationId: Customer_GetReps
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/SalesRep'
+  /customer/repcustomers:
+    get:
+      tags:
+        - Customer
+      summary: Gets the sales rep customers.
+      operationId: Customer_GetRepCustomers
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: salesRepId
+          in: query
+          description: The sales rep identifier.
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CustomerBase'
+  /items/inventory:
+    get:
+      tags:
+        - Item
+      summary: Gets the inventory for the item at each location.  All items will be returned if no item is passed
+      operationId: Item_GetInventory
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: item
+          in: query
+          description: (Optional) The item number.
+          required: false
+          type: string
+      responses:
+        '201':
+          description: ''
+          schema:
+            $ref: '#/definitions/Inventory'
+    post:
+      tags:
+        - Item
+      summary: Gets the inventory for each item at each location
+      operationId: Item_GetMultipleInventory
+      consumes:
+        - application/json
+        - text/json
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: items
+          in: body
+          description: The list of item numbers.
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '201':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Inventory'
+  '/orders/{id}':
+    get:
+      tags:
+        - Order
+      summary: Gets an Order and Details by Order Id.
+      operationId: Order_Get
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: Order Id.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/InterfaceOrder'
+    put:
+      tags:
+        - Order
+      summary: Updates the status of an Order.
+      operationId: Order_Put
+      consumes:
+        - application/json
+        - text/json
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: The identifier.
+          required: true
+          type: integer
+          format: int32
+        - name: status
+          in: body
+          description: The status.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: string
+    delete:
+      tags:
+        - Order
+      summary: Deletes an order if it has not yet been imported into the AS400.
+      operationId: Order_Delete
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: Order Interface PO.
+          required: true
+          type: string
+      responses:
+        '204':
+          description: ''
+          schema:
+            type: object
+  '/orders/{id}/status':
+    get:
+      tags:
+        - Order
+      summary: Gets an Order status by Order Id.
+      operationId: Order_Status
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: id
+          in: path
+          description: Order Id.
+          required: true
+          type: string
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: string
+  '/orders/recent/{locationId}':
+    get:
+      tags:
+        - Order
+      summary: Gets a list of orders for a specified location. Gets all the orders for the last 7 days.
+      operationId: Order_GetAll
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: locationId
+          in: path
+          description: The location where orders will ship from
+          required: true
+          type: integer
+          format: int32
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/InterfaceOrder'
+  /orders:
+    post:
+      tags:
+        - Order
+      summary: Creates a new Order Interface. AS400 will convert this into a real order on batch
+      operationId: Order_Post
+      consumes:
+        - application/json
+        - text/json
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: order
+          in: body
+          description: The order interface.
+          required: true
+          schema:
+            $ref: '#/definitions/PostInterfaceOrder'
+      responses:
+        '201':
+          description: ''
+          schema:
+            type: string
+  /priceline/customerprices:
+    post:
+      tags:
+        - Priceline
+      summary: Creates a new Order Interface. AS400 will convert this into a real order on batch
+      operationId: Priceline_GetCustomerPrices
+      consumes:
+        - application/json
+        - text/json
+        - application/x-www-form-urlencoded
+      produces:
+        - application/json
+        - text/json
+      parameters:
+        - name: data
+          in: body
+          description: The customer number and list of products.
+          required: true
+          schema:
+            $ref: '#/definitions/PostCustomerItems'
+      responses:
+        '201':
+          description: ''
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Priceline'
+  /status:
+    get:
+      tags:
+        - Status
+      summary: Gets a list of all the tax amounts.
+      operationId: Status_Get
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/Status'
+  /tax:
+    get:
+      tags:
+        - Tax
+      summary: Gets a list of all the tax amounts.
+      operationId: Tax_Get
+      consumes: []
+      produces:
+        - application/json
+        - text/json
+      responses:
+        '200':
+          description: ''
+          schema:
+            type: object
+            additionalProperties:
+              format: double
+              type: number
+definitions:
+  PostArcheryInterfaceOrder:
+    description: An instance of an Web Order
+    required:
+      - customerId
+      - locationId
+      - billToName
+      - billToAddress1
+      - billToCity
+      - billToState
+      - billToZip
+      - billToCountry
+      - shipToName
+      - shipToAddress1
+      - shipToCity
+      - shipToState
+      - shipToZip
+      - shipToCountry
+      - lines
+    type: object
+    properties:
+      shipMethod:
+        type: string
+      repNumber:
+        format: int32
+        type: integer
+      term:
+        type: string
+      orderDate:
+        format: date-time
+        type: string
+      shipDate:
+        format: date-time
+        type: string
+      program:
+        type: string
+      customerPo:
+        type: string
+      createdBy:
+        type: string
+      modifiedBy:
+        type: string
+      customerId:
+        format: int32
+        description: Gets or sets the customer identifier.
+        type: integer
+      locationId:
+        format: int32
+        description: The location the order will ship from
+        type: integer
+      billToNumber:
+        description: Gets or sets the bill to number.
+        type: string
+      billToName:
+        description: Gets or sets the name of the bill to.
+        type: string
+      billToAddress1:
+        description: Gets or sets the bill to address1.
+        type: string
+      billToAddress2:
+        description: Gets or sets the bill to address2.
+        type: string
+      billToCity:
+        description: Gets or sets the bill to city.
+        type: string
+      billToState:
+        description: Gets or sets the state of the bill to.
+        type: string
+      billToZip:
+        description: Gets or sets the bill to zip.
+        type: string
+      billToCountry:
+        description: Gets or sets the bill to country.
+        type: string
+      billToPhone:
+        description: Gets or sets the bill to phone.
+        type: string
+      shipToNumber:
+        description: Gets or sets the ship to number.
+        type: string
+      shipToName:
+        description: Gets or sets the name of the ship to.
+        type: string
+      shipToAddress1:
+        description: Gets or sets the ship to address1.
+        type: string
+      shipToAddress2:
+        description: Gets or sets the ship to address2.
+        type: string
+      shipToCity:
+        description: Gets or sets the ship to city.
+        type: string
+      shipToState:
+        description: Gets or sets the state of the ship to.
+        type: string
+      shipToZip:
+        description: Gets or sets the ship to zip.
+        type: string
+      shipToCountry:
+        description: Gets or sets the ship to country.
+        type: string
+      shipToPhone:
+        description: Gets or sets the ship to phone.
+        type: string
+      emailAddress:
+        description: Gets or sets the email address.
+        type: string
+      webOrderId:
+        description: Gets or sets the web order identifier.
+        type: string
+      paymentTransactionId:
+        description: Gets or sets the Transaction Id.
+        type: string
+      messageLine:
+        description: Gets or sets the notes.
+        type: string
+      lines:
+        description: Gets or sets the lines.
+        type: array
+        items:
+          $ref: '#/definitions/InterfaceOrderItem'
+  InterfaceOrderItem:
+    description: An Order Line Item
+    required:
+      - item
+      - quantity
+      - price
+    type: object
+    properties:
+      item:
+        description: Gets or sets the item.
+        type: string
+      quantity:
+        format: int32
+        description: Gets or sets the quantity.
+        type: integer
+      price:
+        format: double
+        description: Gets or sets the price.
+        type: number
+      description:
+        description: Description of the item
+        type: string
+  ArcheryOrderInterface:
+    type: object
+    properties:
+      interfacePo:
+        type: string
+      interfacePoType:
+        type: string
+      status:
+        type: string
+      locationId:
+        format: int32
+        type: integer
+      orderId:
+        format: int32
+        type: integer
+      customerId:
+        format: int32
+        type: integer
+      billToNumber:
+        type: string
+      billToName:
+        type: string
+      billToAddress1:
+        type: string
+      billToAddress2:
+        type: string
+      billToCity:
+        type: string
+      billToState:
+        type: string
+      billToZip:
+        type: string
+      billToCountry:
+        type: string
+      billToPhone:
+        type: string
+      shipToNumber:
+        type: string
+      shipToName:
+        type: string
+      shipToAddress1:
+        type: string
+      shipToAddress2:
+        type: string
+      shipToCity:
+        type: string
+      shipToState:
+        type: string
+      shipToZip:
+        type: string
+      shipToCountry:
+        type: string
+      shipToPhone:
+        type: string
+      shipMethod:
+        type: string
+      emailAddress:
+        type: string
+      salesRepId:
+        format: int32
+        type: integer
+      terms:
+        type: string
+      paymentTransactionId:
+        type: string
+      paymentGateway:
+        type: string
+      orderDate:
+        format: int32
+        type: integer
+      shipDate:
+        format: int32
+        type: integer
+      cancelDate:
+        format: int32
+        type: integer
+      freight:
+        type: string
+      discount:
+        type: string
+      program:
+        type: string
+      hasNotes:
+        type: string
+      customerPo:
+        type: string
+      orderSource:
+        type: string
+      lastModifiedBy:
+        type: string
+      lastModifiedDate:
+        format: int32
+        type: integer
+      lastModifiedTime:
+        format: int32
+        type: integer
+      createdBy:
+        type: string
+      createdDate:
+        format: int32
+        type: integer
+      createdTime:
+        format: int32
+        type: integer
+      lines:
+        type: array
+        items:
+          $ref: '#/definitions/ArcheryOrderInterfaceItem'
+      notes:
+        type: array
+        items:
+          $ref: '#/definitions/ArcheryOrderInterfaceNote'
+      extensionData:
+        $ref: '#/definitions/ExtensionDataObject'
+      isDirty:
+        type: boolean
+        readOnly: true
+      validationErrors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationFailure'
+      isValid:
+        type: boolean
+        readOnly: true
+  ArcheryOrderInterfaceItem:
+    type: object
+    properties:
+      interfacePo:
+        type: string
+      line:
+        format: int32
+        type: integer
+      item:
+        type: string
+      quantity:
+        format: int32
+        type: integer
+      price:
+        format: double
+        type: number
+      tax:
+        format: double
+        type: number
+      description:
+        type: string
+      customerItem:
+        type: string
+      lastModifiedBy:
+        type: string
+      lastModifiedDate:
+        format: int32
+        type: integer
+      lastModifiedTime:
+        format: int32
+        type: integer
+      createdBy:
+        type: string
+      createdDate:
+        format: int32
+        type: integer
+      createdTime:
+        format: int32
+        type: integer
+      notes:
+        type: array
+        items:
+          $ref: '#/definitions/ArcheryOrderInterfaceNote'
+      productLineId:
+        format: int32
+        type: integer
+      extensionData:
+        $ref: '#/definitions/ExtensionDataObject'
+      isDirty:
+        type: boolean
+        readOnly: true
+      validationErrors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationFailure'
+      isValid:
+        type: boolean
+        readOnly: true
+  ArcheryOrderInterfaceNote:
+    type: object
+    properties:
+      interfacePo:
+        type: string
+      detailLine:
+        format: int32
+        type: integer
+      type:
+        type: string
+      lineNumber:
+        format: int32
+        type: integer
+      notes:
+        type: string
+      extensionData:
+        $ref: '#/definitions/ExtensionDataObject'
+      isDirty:
+        type: boolean
+        readOnly: true
+      validationErrors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationFailure'
+      isValid:
+        type: boolean
+        readOnly: true
+  ExtensionDataObject:
+    type: object
+    properties: {}
+  ValidationFailure:
+    type: object
+    properties:
+      propertyName:
+        type: string
+        readOnly: true
+      errorMessage:
+        type: string
+        readOnly: true
+      attemptedValue:
+        type: object
+        readOnly: true
+      customState:
+        type: object
+      severity:
+        enum:
+          - Error
+          - Warning
+          - Info
+        type: string
+      errorCode:
+        type: string
+      formattedMessageArguments:
+        type: array
+        items:
+          type: object
+      formattedMessagePlaceholderValues:
+        type: object
+        additionalProperties:
+          type: object
+      resourceName:
+        type: string
+  Customer:
+    description: An instance of an Customer
+    type: object
+    properties:
+      creditLimit:
+        format: double
+        description: Gets or sets the credit limit.
+        type: number
+      availableCredit:
+        format: double
+        description: Gets or sets the balance.
+        type: number
+      salesTaxExempt:
+        description: Gets or sets the Sales Tax Exemptions flag. Values Yes/No
+        type: string
+      creditCode:
+        description: Gets or sets the credit code.
+        type: string
+      id:
+        format: int32
+        description: Gets or sets the identifier.
+        type: integer
+      pricelineCode:
+        format: int32
+        description: Gets or sets the priceline code.
+        type: integer
+      customerName:
+        description: Gets or sets the name of the mailing.
+        type: string
+      salesRepId:
+        format: int32
+        description: Gets or sets the sales rep identifier.
+        type: integer
+      billToName:
+        description: Gets or sets the name of the bill to.
+        type: string
+      billToAddrLine1:
+        description: Gets or sets the bill to addr line1.
+        type: string
+      billToAddrLine2:
+        description: Gets or sets the bill to addr line2.
+        type: string
+      billToCity:
+        description: Gets or sets the bill to city.
+        type: string
+      billToState:
+        description: Gets or sets the state of the bill to.
+        type: string
+      billToZip:
+        format: int32
+        description: Gets or sets the bill to zip.
+        type: integer
+      billToPhoneNumber:
+        format: int64
+        description: Gets or sets the bill to phone number.
+        type: integer
+      billToCountry:
+        description: Gets or sets the bill to country.
+        type: string
+      shipToName:
+        description: Gets or sets the name of the ship to.
+        type: string
+      shipToAddrLine1:
+        description: Gets or sets the ship to addr line1.
+        type: string
+      shipToAddrLine2:
+        description: Gets or sets the ship to addr line2.
+        type: string
+      shipToCity:
+        description: Gets or sets the ship to city.
+        type: string
+      shipToState:
+        description: Gets or sets the state of the ship to.
+        type: string
+      shipToZip:
+        format: int32
+        description: Gets or sets the ship to zip.
+        type: integer
+      shipToCountry:
+        description: Gets or sets the ship to country.
+        type: string
+      shipToPhoneNumber:
+        format: int64
+        description: Gets or sets the ship to phone number.
+        type: integer
+      email:
+        description: Gets or sets the email order confirm.
+        type: string
+      createdDate:
+        format: date-time
+        description: Gets or sets the last modified date.
+        type: string
+      lastModifiedDate:
+        format: date-time
+        description: Gets or sets the last modified date.
+        type: string
+  CustomerBase:
+    description: An instance of an Customer
+    type: object
+    properties:
+      id:
+        format: int32
+        description: Gets or sets the identifier.
+        type: integer
+      pricelineCode:
+        format: int32
+        description: Gets or sets the priceline code.
+        type: integer
+      customerName:
+        description: Gets or sets the name of the mailing.
+        type: string
+      salesRepId:
+        format: int32
+        description: Gets or sets the sales rep identifier.
+        type: integer
+      billToName:
+        description: Gets or sets the name of the bill to.
+        type: string
+      billToAddrLine1:
+        description: Gets or sets the bill to addr line1.
+        type: string
+      billToAddrLine2:
+        description: Gets or sets the bill to addr line2.
+        type: string
+      billToCity:
+        description: Gets or sets the bill to city.
+        type: string
+      billToState:
+        description: Gets or sets the state of the bill to.
+        type: string
+      billToZip:
+        format: int32
+        description: Gets or sets the bill to zip.
+        type: integer
+      billToPhoneNumber:
+        format: int64
+        description: Gets or sets the bill to phone number.
+        type: integer
+      billToCountry:
+        description: Gets or sets the bill to country.
+        type: string
+      shipToName:
+        description: Gets or sets the name of the ship to.
+        type: string
+      shipToAddrLine1:
+        description: Gets or sets the ship to addr line1.
+        type: string
+      shipToAddrLine2:
+        description: Gets or sets the ship to addr line2.
+        type: string
+      shipToCity:
+        description: Gets or sets the ship to city.
+        type: string
+      shipToState:
+        description: Gets or sets the state of the ship to.
+        type: string
+      shipToZip:
+        format: int32
+        description: Gets or sets the ship to zip.
+        type: integer
+      shipToCountry:
+        description: Gets or sets the ship to country.
+        type: string
+      shipToPhoneNumber:
+        format: int64
+        description: Gets or sets the ship to phone number.
+        type: integer
+      email:
+        description: Gets or sets the email order confirm.
+        type: string
+      createdDate:
+        format: date-time
+        description: Gets or sets the last modified date.
+        type: string
+      lastModifiedDate:
+        format: date-time
+        description: Gets or sets the last modified date.
+        type: string
+  SalesRep:
+    description: An instance of an Sales Rep
+    type: object
+    properties:
+      id:
+        format: int32
+        description: Sales Rep Number.
+        type: integer
+      name:
+        description: Sales Rep Name.
+        type: string
+      address1:
+        description: Address first line.
+        type: string
+      address2:
+        description: Address second line.
+        type: string
+      cityState:
+        description: City and State.
+        type: string
+      zipCode:
+        format: int32
+        description: Zip code
+        type: integer
+      companyName:
+        description: Company Name.
+        type: string
+      phone:
+        format: int64
+        description: Rep's phone number.
+        type: integer
+      email:
+        description: Rep's email address.
+        type: string
+  Inventory:
+    type: object
+    properties:
+      itemNumber:
+        type: string
+      locationCount:
+        type: array
+        items:
+          $ref: '#/definitions/InventoryLocation'
+  InventoryLocation:
+    type: object
+    properties:
+      location:
+        type: string
+      quantity:
+        format: int32
+        type: integer
+  InterfaceOrder:
+    description: An instance of an Web Order
+    required:
+      - customerId
+      - locationId
+      - billToName
+      - billToAddress1
+      - billToCity
+      - billToState
+      - billToZip
+      - billToCountry
+      - shipToName
+      - shipToAddress1
+      - shipToCity
+      - shipToState
+      - shipToZip
+      - shipToCountry
+      - lines
+    type: object
+    properties:
+      interfacePo:
+        description: Gets or sets the interface po.
+        type: string
+        readOnly: true
+      status:
+        description: Gets or sets the status.
+        type: string
+        readOnly: true
+      orderId:
+        format: int32
+        description: Gets or sets the order identifier.
+        type: integer
+        readOnly: true
+      customerId:
+        format: int32
+        description: Gets or sets the customer identifier.
+        type: integer
+      locationId:
+        format: int32
+        description: The location the order will ship from
+        type: integer
+      billToNumber:
+        description: Gets or sets the bill to number.
+        type: string
+      billToName:
+        description: Gets or sets the name of the bill to.
+        type: string
+      billToAddress1:
+        description: Gets or sets the bill to address1.
+        type: string
+      billToAddress2:
+        description: Gets or sets the bill to address2.
+        type: string
+      billToCity:
+        description: Gets or sets the bill to city.
+        type: string
+      billToState:
+        description: Gets or sets the state of the bill to.
+        type: string
+      billToZip:
+        description: Gets or sets the bill to zip.
+        type: string
+      billToCountry:
+        description: Gets or sets the bill to country.
+        type: string
+      billToPhone:
+        description: Gets or sets the bill to phone.
+        type: string
+      shipToNumber:
+        description: Gets or sets the ship to number.
+        type: string
+      shipToName:
+        description: Gets or sets the name of the ship to.
+        type: string
+      shipToAddress1:
+        description: Gets or sets the ship to address1.
+        type: string
+      shipToAddress2:
+        description: Gets or sets the ship to address2.
+        type: string
+      shipToCity:
+        description: Gets or sets the ship to city.
+        type: string
+      shipToState:
+        description: Gets or sets the state of the ship to.
+        type: string
+      shipToZip:
+        description: Gets or sets the ship to zip.
+        type: string
+      shipToCountry:
+        description: Gets or sets the ship to country.
+        type: string
+      shipToPhone:
+        description: Gets or sets the ship to phone.
+        type: string
+      emailAddress:
+        description: Gets or sets the email address.
+        type: string
+      webOrderId:
+        description: Gets or sets the web order identifier.
+        type: string
+      paymentTransactionId:
+        description: Gets or sets the Transaction Id.
+        type: string
+      messageLine:
+        description: Gets or sets the notes.
+        type: string
+      lines:
+        description: Gets or sets the lines.
+        type: array
+        items:
+          $ref: '#/definitions/InterfaceOrderItem'
+  PostInterfaceOrder:
+    description: An instance of an Web Order
+    required:
+      - customerId
+      - locationId
+      - billToName
+      - billToAddress1
+      - billToCity
+      - billToState
+      - billToZip
+      - billToCountry
+      - shipToName
+      - shipToAddress1
+      - shipToCity
+      - shipToState
+      - shipToZip
+      - shipToCountry
+      - lines
+    type: object
+    properties:
+      customerId:
+        format: int32
+        description: Gets or sets the customer identifier.
+        type: integer
+      locationId:
+        format: int32
+        description: The location the order will ship from
+        type: integer
+      billToNumber:
+        description: Gets or sets the bill to number.
+        type: string
+      billToName:
+        description: Gets or sets the name of the bill to.
+        type: string
+      billToAddress1:
+        description: Gets or sets the bill to address1.
+        type: string
+      billToAddress2:
+        description: Gets or sets the bill to address2.
+        type: string
+      billToCity:
+        description: Gets or sets the bill to city.
+        type: string
+      billToState:
+        description: Gets or sets the state of the bill to.
+        type: string
+      billToZip:
+        description: Gets or sets the bill to zip.
+        type: string
+      billToCountry:
+        description: Gets or sets the bill to country.
+        type: string
+      billToPhone:
+        description: Gets or sets the bill to phone.
+        type: string
+      shipToNumber:
+        description: Gets or sets the ship to number.
+        type: string
+      shipToName:
+        description: Gets or sets the name of the ship to.
+        type: string
+      shipToAddress1:
+        description: Gets or sets the ship to address1.
+        type: string
+      shipToAddress2:
+        description: Gets or sets the ship to address2.
+        type: string
+      shipToCity:
+        description: Gets or sets the ship to city.
+        type: string
+      shipToState:
+        description: Gets or sets the state of the ship to.
+        type: string
+      shipToZip:
+        description: Gets or sets the ship to zip.
+        type: string
+      shipToCountry:
+        description: Gets or sets the ship to country.
+        type: string
+      shipToPhone:
+        description: Gets or sets the ship to phone.
+        type: string
+      emailAddress:
+        description: Gets or sets the email address.
+        type: string
+      webOrderId:
+        description: Gets or sets the web order identifier.
+        type: string
+      paymentTransactionId:
+        description: Gets or sets the Transaction Id.
+        type: string
+      messageLine:
+        description: Gets or sets the notes.
+        type: string
+      lines:
+        description: Gets or sets the lines.
+        type: array
+        items:
+          $ref: '#/definitions/InterfaceOrderItem'
+  PostCustomerItems:
+    description: An instance of an Web Order
+    required:
+      - customerId
+    type: object
+    properties:
+      customerId:
+        format: int32
+        description: Gets or sets the customer identifier.
+        type: integer
+      items:
+        description: Gets or sets the list of Items.
+        type: array
+        items:
+          type: string
+  Priceline:
+    type: object
+    properties:
+      priceLineCode:
+        format: int32
+        type: integer
+      itemNumber:
+        type: string
+      eventCode:
+        type: string
+      orderType:
+        type: string
+      price:
+        format: double
+        type: number
+      fetExemptPrice:
+        type: string
+  Status:
+    description: The tax rate for a state
+    required:
+      - version
+      - healthy
+      - services
+    type: object
+    properties:
+      version:
+        description: Version of the status checker
+        type: string
+      healthy:
+        description: Are all services up and running or not
+        type: boolean
+      services:
+        description: List of services with their state
+        type: array
+        items:
+          $ref: '#/definitions/ServiceStatus'
+  ServiceStatus:
+    description: The tax rate for a state
+    required:
+      - name
+      - running
+    type: object
+    properties:
+      name:
+        description: Full name of the service
+        type: string
+      version:
+        description: The assembly version of the service runnning
+        type: string
+      running:
+        description: State of a service if its running or not
+        type: boolean

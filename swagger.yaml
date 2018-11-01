@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   version: v1
-  title: Enterprise Service APIs
+  title: Enterprise Service API
 host: api.enterpriseservice.escaladesports.com
 schemes:
   - http
